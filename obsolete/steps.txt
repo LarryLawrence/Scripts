@@ -1,0 +1,49 @@
+abc.sh boot.img-kernel可以得到boot.img*
+
+./split_bootimg.pl boot.img
+
+./abc.sh zImage解压得到内核
+
+-----------------------
+
+perl split_bootimg.pl boot.img得到boot.img-kernel和boot.img-ramdisk.gz
+
+---------------22日---------------
+xz无法解压
+gz可以解压，解压出一个
+lzma解压出4个
+
+
+那么，使用 split.sh处理提取出来的boot.img，在split.sh所在目录生成boot.img-kernel,然后用binwalking.sh处理这些boot.img-kernel，在binwalking.sh所在目录生成很多文件夹，里面没有后缀的就是要的kernel。
+
+合并一下，最终使用方法：
+1.提取boot.img放到$HOME/workspace/bootfiles/里。
+2.cd到$HOME/workspace/codes/testArea/下运行splitandwork.sh。最后在$HOME/workspace/codes/testArea/thingsNeeded就是要的内核。
+
+--------------23日-----------------
+想要把kernel和相应的build.prop归类
+把boot.img和build.prop先分别归类到一个文件夹
+然后在每一个这样的文件夹里执行split，得到boot.img-kernel，问题是怎么把这个文件就放在原本的文件夹里呢，因为一旦split就会在存放sh代码的目录下生成boot.img-kernel以及ramdisk.gz。可否将生成的那个boot.img-kernel立刻拷贝回原来的文件夹。
+
+可以了，将boot.img-kernel和build.prop放到同1文件夹了。下面要binwalk，把生成的没有后缀的kernel放到原来的文件夹。
+
+好了，可以了。
+
+使用方法：
+1.把ROM解压了，放到/home/larry/workspace/codes/testArea/unzippedRoms里
+2.运行keepIMGnPROP.sh（testArea下），将会在testArea下生成classifiedStuff文件夹
+3.运行splitandwalk.sh，然后在classifiedStuff的子文件夹里就得到最终的kernal和对应的prop。如果只有prop，说明kernel没有binwalk解压成功，一般是xz压缩方式。gz和lzma可正常解压。
+
+----------24日--------------------
+keepIMGnPROP.sh需要解压后拷贝到linux速度太慢了。
+需要在windows下实现同样的功能再拷贝过去。也就是要在unzippedRoms生成数字文件夹。
+
+304个都要70G
+
+---------up2date-------------------
+使用方法：
+1.把ROM解压，放到windwos的D:\TEST\unzipped里
+2.运行keep.py，会按照从1开始的顺序重命名文件夹。将数字文件夹复制到linux的classifiedStuff
+3.运行splitandwalk.sh，然后在classifiedStuff的子文件夹里就得到最终的kernal和对应的prop。注意，已经把只有一个文件的文件夹删掉了。如果只有prop，说明kernel没有binwalk解压成功，一般是xz压缩方式。gz和lzma可正常解压。
+4.AddTestInfo.sh和AddLinuxNBuildVersion.sh可以分别添加result.txt和linux_n_build_ver.txt
+5.D:TEST\中的SortSDKnBrand.py用来区分API14以上或以下，API14以上可以分brand存放。使用方法是把数字文件夹拷贝到D:\TEST\classifiedStuff。然后会在D:\TEST\ICSorNot中做出分类。
